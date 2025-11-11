@@ -1,0 +1,10 @@
+[project]
+name = "inference"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "transformers-stream-generator>=0.0.5",
+    "vllm>=0.11.0",
+]

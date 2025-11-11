@@ -1,17 +1,20 @@
-
 from torch.utils.data import Dataset, DataLoader
+import pandas as pd
+from PIL import Image
 
 
 class PromptDataset(Dataset):
     def __init__(self, df: pd.DataFrame, 
                  prompt_col: str = "quesion",
                  image_col:str = "image_path",
-                 max_size = 512):
+                 max_size = 512,
+                 add_options=True):
         
         self.df = df
         self.prompt_col = prompt_col
         self.image_col = image_col
         self.max_size = max_size
+        self.add_options = add_options
 
     def __len__(self):
         return len(self.df)
@@ -25,15 +28,25 @@ class PromptDataset(Dataset):
             image,scale = self.re_scale(image)
         
         new_w, new_h = image.size
+
+        if self.add_options:
+            question =  row["question"] +  f" Options: {row['options']}"
+        else:
+            question = row["question"]
         
         return {
             "index": int(row["index"]),  
-            "question": row["question"],          # original df index
+            "question": question, 
+            "options": row["options"],                # original df index
             "image_path":row["image_path"],
+            "dataset":row["dataset"],
+            "class_label":row["class_label"],
+
+           
             "image": image,
             "image_scale":scale,
             "scaled_width":new_w,
-            "scaled_heighy":new_h,
+            "scaled_height":new_h,
         }
     def re_scale(self,image):
             orig_w, orig_h = image.size
